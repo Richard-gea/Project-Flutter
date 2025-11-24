@@ -189,6 +189,11 @@ app.delete('/api/maladies/:id', async (req, res) => {
     if (!deletedMalady) {
       return res.status(404).json({ error: 'Malady not found' });
     }
+    
+    // Delete all medicaments associated with this malady
+    await Medicament.deleteMany({ malady_id: req.params.id });
+    console.log(`✅ Deleted malady: ${deletedMalady.maladyName} and its related medicaments`);
+    
     res.status(200).json({ message: 'Malady deleted successfully' });
   } catch (error) {
     console.error('Error deleting malady:', error);
@@ -298,6 +303,23 @@ app.get('/api/consultations/patient/:patientId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching patient consultations:', error);
     res.status(500).json({ error: 'Failed to fetch consultations' });
+  }
+});
+
+// Soft delete consultation
+app.patch('/api/consultations/:id', async (req, res) => {
+  try {
+    const consultation = await Consultation.findByIdAndDelete(req.params.id);
+    
+    if (!consultation) {
+      return res.status(404).json({ error: 'Consultation not found' });
+    }
+    
+    console.log(`🗑️ Deleted consultation: ${req.params.id}`);
+    res.json({ message: 'Consultation deleted successfully', consultation });
+  } catch (error) {
+    console.error('Error deleting consultation:', error);
+    res.status(500).json({ error: 'Failed to delete consultation' });
   }
 });
 

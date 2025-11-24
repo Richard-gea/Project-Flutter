@@ -37,7 +37,6 @@ class _AdminScreenState extends State<AdminScreen> {
       final provider = context.read<ConsultationProvider>();
       provider.loadMaladies();
       provider.loadMedicaments();
-      provider.loadConsultations();
     });
   }
 
@@ -144,79 +143,6 @@ class _AdminScreenState extends State<AdminScreen> {
                               foregroundColor: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          
-                          // Display existing maladies with delete buttons
-                          if (provider.maladies.isNotEmpty) ...[
-                            const Divider(),
-                            const SizedBox(height: 12),
-                            const Text(
-                              "Existing Maladies:",
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              constraints: const BoxConstraints(maxHeight: 150),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: provider.maladies.length,
-                                itemBuilder: (context, index) {
-                                  final malady = provider.maladies[index];
-                                  return ListTile(
-                                    dense: true,
-                                    title: Text(malady.maladyName),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                                      tooltip: 'Delete malady',
-                                      onPressed: () async {
-                                        final confirmed = await showDialog<bool>(
-                                          context: context,
-                                          builder: (dialogCtx) => AlertDialog(
-                                            title: const Text("Delete Malady"),
-                                            content: Text(
-                                              "Are you sure you want to delete '${malady.maladyName}'?\n\nThis will also delete all related medicaments."
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () => Navigator.of(dialogCtx).pop(false),
-                                                child: const Text("Cancel"),
-                                              ),
-                                              ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.red,
-                                                  foregroundColor: Colors.white,
-                                                ),
-                                                onPressed: () => Navigator.of(dialogCtx).pop(true),
-                                                child: const Text("Delete"),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                        
-                                        if (confirmed == true && malady.id != null) {
-                                          final success = await provider.deleteMalady(malady.id!);
-                                          if (success && mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                content: Text('Malady deleted successfully'),
-                                                backgroundColor: Colors.green,
-                                              ),
-                                            );
-                                            setStateDialog(() {});
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                          
                           const SizedBox(height: 20),
                           const Divider(),
                           const SizedBox(height: 20),
@@ -308,88 +234,6 @@ class _AdminScreenState extends State<AdminScreen> {
                                 foregroundColor: Colors.white,
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            
-                            // Display existing medicaments with delete buttons
-                            if (provider.medicaments.isNotEmpty) ...[
-                              const Divider(),
-                              const SizedBox(height: 12),
-                              const Text(
-                                "Existing Medicaments:",
-                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                constraints: const BoxConstraints(maxHeight: 150),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: provider.medicaments.length,
-                                  itemBuilder: (context, index) {
-                                    final medicament = provider.medicaments[index];
-                                    final maladyName = provider.maladies
-                                        .firstWhere(
-                                          (m) => m.id == medicament.maladyId,
-                                          orElse: () => provider.maladies.first,
-                                        )
-                                        .maladyName;
-                                    return ListTile(
-                                      dense: true,
-                                      title: Text(medicament.medicamentName),
-                                      subtitle: Text(
-                                        'For: $maladyName',
-                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                      ),
-                                      trailing: IconButton(
-                                        icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                                        tooltip: 'Delete medicament',
-                                        onPressed: () async {
-                                          final confirmed = await showDialog<bool>(
-                                            context: context,
-                                            builder: (dialogCtx) => AlertDialog(
-                                              title: const Text("Delete Medicament"),
-                                              content: Text(
-                                                "Are you sure you want to delete '${medicament.medicamentName}'?"
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () => Navigator.of(dialogCtx).pop(false),
-                                                  child: const Text("Cancel"),
-                                                ),
-                                                ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: Colors.red,
-                                                    foregroundColor: Colors.white,
-                                                  ),
-                                                  onPressed: () => Navigator.of(dialogCtx).pop(true),
-                                                  child: const Text("Delete"),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                          
-                                          if (confirmed == true && medicament.id != null) {
-                                            final success = await provider.deleteMedicament(medicament.id!);
-                                            if (success && mounted) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('Medicament deleted successfully'),
-                                                  backgroundColor: Colors.green,
-                                                ),
-                                              );
-                                              setStateDialog(() {});
-                                            }
-                                          }
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
                           ],
                         ] else ...[
                           // Edit existing consultation
@@ -503,49 +347,231 @@ class _AdminScreenState extends State<AdminScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (provider.consultations.isEmpty) {
-            return const Center(
-              child: Text(
-                "No consultations found.",
-                style: TextStyle(fontSize: 18),
-              ),
-            );
-          }
-
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(label: Text("Patient Name")),
-                    DataColumn(label: Text("Email")),
-                    DataColumn(label: Text("Malady")),
-                    DataColumn(label: Text("Medicament")),
-                    DataColumn(label: Text("Date")),
-                  ],
-                  rows: provider.consultations.map((consultation) {
-                    final patientName = consultation.patient != null 
-                        ? '${consultation.patient!['firstName'] ?? ''} ${consultation.patient!['lastName'] ?? ''}'.trim()
-                        : 'N/A';
-                    final patientEmail = consultation.patient?['email'] ?? 'N/A';
-                    final maladyName = consultation.malady?['maladyName'] ?? 'N/A';
-                    final medicamentName = consultation.medicament?['medicamentName'] ?? 'N/A';
-                    
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(patientName)),
-                        DataCell(Text(patientEmail.toString())),
-                        DataCell(Text(maladyName.toString())),
-                        DataCell(Text(medicamentName.toString())),
-                        DataCell(Text('${consultation.date.day}/${consultation.date.month}/${consultation.date.year}')),
-                      ],
-                    );
-                  }).toList(),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Maladies Section
+                Expanded(
+                  child: Card(
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Maladies",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "${provider.maladies.length} items",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: provider.maladies.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      "No maladies added yet.\nClick 'Add to Database' to add.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: provider.maladies.length,
+                                    itemBuilder: (context, index) {
+                                      final malady = provider.maladies[index];
+                                      return ListTile(
+                                        leading: const Icon(
+                                          Icons.medical_services,
+                                          color: Colors.red,
+                                        ),
+                                        title: Text(malady.maladyName),
+                                        trailing: IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () async {
+                                            final confirmed = await showDialog<bool>(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                title: const Text("Delete Malady"),
+                                                content: Text(
+                                                  "Delete '${malady.maladyName}'?\n\nThis will also delete all related medicaments.",
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.of(ctx).pop(false),
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                    onPressed: () => Navigator.of(ctx).pop(true),
+                                                    child: const Text("Delete"),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (confirmed == true && malady.id != null) {
+                                              final success = await provider.deleteMalady(malady.id!);
+                                              if (success && mounted) {
+                                                // Reload medicaments to remove those related to deleted malady
+                                                await provider.loadMedicaments();
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Malady deleted successfully'),
+                                                    backgroundColor: Colors.green,
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 16),
+                // Medicaments Section
+                Expanded(
+                  child: Card(
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Medicaments",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "${provider.medicaments.length} items",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: provider.medicaments.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      "No medicaments added yet.\nClick 'Add to Database' to add.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    itemCount: provider.medicaments.length,
+                                    itemBuilder: (context, index) {
+                                      final medicament = provider.medicaments[index];
+                                      
+                                      // Find the malady name, handle case where malady might not exist
+                                      String maladyName = 'Unknown';
+                                      try {
+                                        final malady = provider.maladies.firstWhere(
+                                          (m) => m.id == medicament.maladyId,
+                                        );
+                                        maladyName = malady.maladyName;
+                                      } catch (e) {
+                                        // Malady not found, keep 'Unknown'
+                                      }
+                                      
+                                      return ListTile(
+                                        leading: const Icon(
+                                          Icons.medication,
+                                          color: Colors.green,
+                                        ),
+                                        title: Text(medicament.medicamentName),
+                                        subtitle: Text(
+                                          'For: $maladyName',
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                        trailing: IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () async {
+                                            final confirmed = await showDialog<bool>(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                title: const Text("Delete Medicament"),
+                                                content: Text(
+                                                  "Delete '${medicament.medicamentName}'?",
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () => Navigator.of(ctx).pop(false),
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                    onPressed: () => Navigator.of(ctx).pop(true),
+                                                    child: const Text("Delete"),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+
+                                            if (confirmed == true && medicament.id != null) {
+                                              final success = await provider.deleteMedicament(medicament.id!);
+                                              if (success && mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('Medicament deleted successfully'),
+                                                    backgroundColor: Colors.green,
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           );
         },

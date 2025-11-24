@@ -173,6 +173,28 @@ class ConsultationProvider with ChangeNotifier {
     }
   }
 
+  // Delete consultation (soft delete)
+  Future<bool> deleteConsultation(String id) async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      await ApiService.deleteConsultation(id);
+      
+      // Remove from local list
+      _consultations.removeWhere((consultation) => consultation.id == id);
+      notifyListeners();
+      debugPrint('✅ Deleted consultation: $id');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error deleting consultation: $e');
+      _setError('Failed to delete consultation: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   // Get malady by ID
   Malady? getMaladyById(String id) {
     try {
@@ -235,8 +257,10 @@ class ConsultationProvider with ChangeNotifier {
       await ApiService.deleteMalady(id);
       
       _maladies.removeWhere((malady) => malady.id == id);
+      // Also remove medicaments related to this malady from local list
+      _medicaments.removeWhere((medicament) => medicament.maladyId == id);
       notifyListeners();
-      debugPrint('✅ Deleted malady: $id');
+      debugPrint('✅ Deleted malady: $id and related medicaments');
       return true;
     } catch (e) {
       debugPrint('❌ Error deleting malady: $e');
