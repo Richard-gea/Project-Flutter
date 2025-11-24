@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/patient_provider.dart';
-import '../widgets/connection_test_widget.dart';
 import 'doctor_screen.dart';
 import 'admin_screen.dart';
 
@@ -83,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.green,
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const AdminScreen()),
+                  MaterialPageRoute(builder: (_) => AdminScreen()),
                 ),
               ),
             ),

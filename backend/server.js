@@ -5,18 +5,11 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// MongoDB connection URI
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/pharmax';
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// ================================
-// 📊 DATABASE SCHEMAS (4 Collections)
-// ================================
-
-// 1️⃣ PATIENTS Collection
 const patientSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -42,7 +35,6 @@ const patientSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 2️⃣ MALADIES Collection
 const maladySchema = new mongoose.Schema({
   maladyName: {
     type: String,
@@ -54,7 +46,6 @@ const maladySchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 3️⃣ MEDICAMENTS Collection
 const medicamentSchema = new mongoose.Schema({
   medicamentName: {
     type: String,
@@ -70,7 +61,6 @@ const medicamentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// 4️⃣ CONSULTATIONS Collection
 const consultationSchema = new mongoose.Schema({
   patient_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -91,20 +81,15 @@ const consultationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     required: true
-  },
+  }
 }, {
   timestamps: true
 });
 
-// Create Models
 const Patient = mongoose.model('Patient', patientSchema);
 const Malady = mongoose.model('Malady', maladySchema);
 const Medicament = mongoose.model('Medicament', medicamentSchema);
 const Consultation = mongoose.model('Consultation', consultationSchema);
-
-// ================================
-// 🔗 MONGODB CONNECTION
-// ================================
 
 async function connectToMongoDB() {
   try {
@@ -112,32 +97,17 @@ async function connectToMongoDB() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('✅ Connected to MongoDB');
-    console.log(`🌐 Database: ${mongoose.connection.name}`);
-    console.log(`📍 Host: ${mongoose.connection.host}:${mongoose.connection.port}`);
-    
-    // Initialize sample data
     await initializeSampleData();
   } catch (error) {
-    console.error('❌ MongoDB Connection Error:', error.message);
-   
+    console.error('MongoDB Connection Error:', error.message);
     process.exit(1);
   }
 }
 
-// ================================
-// 🎯 INITIALIZE SAMPLE DATA
-// ================================
-
 async function initializeSampleData() {
   try {
-    // Check if we already have data
     const maladyCount = await Malady.countDocuments();
-    
     if (maladyCount === 0) {
-      console.log('🔧 Initializing sample data...');
-      
-      // Create sample maladies
       const sampleMaladies = [
         { maladyName: 'Diabetes' },
         { maladyName: 'Hypertension' },
@@ -145,11 +115,7 @@ async function initializeSampleData() {
         { maladyName: 'Asthma' },
         { maladyName: 'Migraine' }
       ];
-      
       const createdMaladies = await Malady.insertMany(sampleMaladies);
-      console.log(`✅ Created ${createdMaladies.length} sample maladies`);
-      
-      // Create sample medicaments
       const sampleMedicaments = [
         { medicamentName: 'Metformin',  malady_id: createdMaladies[0]._id },
         { medicamentName: 'Insulin', malady_id: createdMaladies[0]._id },
@@ -159,20 +125,13 @@ async function initializeSampleData() {
         { medicamentName: 'Albuterol',  malady_id: createdMaladies[3]._id },
         { medicamentName: 'Sumatriptan',  malady_id: createdMaladies[4]._id }
       ];
-      
-      const createdMedicaments = await Medicament.insertMany(sampleMedicaments);
-      console.log(`✅ Created ${createdMedicaments.length} sample medicaments`);
+      await Medicament.insertMany(sampleMedicaments);
     }
   } catch (error) {
-    console.error('⚠️ Error initializing sample data:', error.message);
+    console.error('Error initializing sample data:', error.message);
   }
 }
 
-// ================================
-// 🏥 API ROUTES - PATIENTS
-// ================================
-
-// Get all patients
 app.get('/api/patients', async (req, res) => {
   try {
     const patients = await Patient.find().sort({ createdAt: -1 });
@@ -183,16 +142,12 @@ app.get('/api/patients', async (req, res) => {
   }
 });
 
-// Create new patient
 app.post('/api/patients', async (req, res) => {
   try {
     const { firstName, lastName, email } = req.body;
-    
     const patient = new Patient({ firstName, lastName, email });
     const savedPatient = await patient.save();
-    
-    console.log(`✅ Created patient: ${firstName} ${lastName}`);
-    res.status(201).json({ patient: savedPatient, message: 'Patient created successfully' });
+    res.status(201).json({ patient: savedPatient });
   } catch (error) {
     console.error('Error creating patient:', error);
     if (error.code === 11000) {
@@ -203,27 +158,9 @@ app.post('/api/patients', async (req, res) => {
   }
 });
 
-// Get patient by ID
-app.get('/api/patients/:id', async (req, res) => {
-  try {
-    const patient = await Patient.findById(req.params.id);
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
-    }
-    res.json({ patient });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch patient' });
-  }
-});
-
-// ================================
-// 💊 API ROUTES - MALADIES
-// ================================
-
-// Get all maladies
 app.get('/api/maladies', async (req, res) => {
   try {
-    const maladies = await Malady.find().sort({ maladyName: 1 });
+    const maladies = await Malady.find().sort({ createdAt: -1 });
     res.json({ maladies, count: maladies.length });
   } catch (error) {
     console.error('Error fetching maladies:', error);
@@ -231,29 +168,37 @@ app.get('/api/maladies', async (req, res) => {
   }
 });
 
-// Create new malady
 app.post('/api/maladies', async (req, res) => {
   try {
-    const { maladyName, description } = req.body;
-    const malady = new Malady({ maladyName, description });
+    const { maladyName } = req.body;
+    if (!maladyName || maladyName.trim() === '') {
+      return res.status(400).json({ error: 'Malady name is required' });
+    }
+    const malady = new Malady({ maladyName: maladyName.trim() });
     const savedMalady = await malady.save();
-    
-    console.log(`✅ Created malady: ${maladyName}`);
-    res.status(201).json({ malady: savedMalady, message: 'Malady created successfully' });
+    res.status(201).json({ malady: savedMalady });
   } catch (error) {
     console.error('Error creating malady:', error);
     res.status(400).json({ error: error.message });
   }
 });
 
-// ================================
-// 💉 API ROUTES - MEDICAMENTS
-// ================================
+app.delete('/api/maladies/:id', async (req, res) => {
+  try {
+    const deletedMalady = await Malady.findByIdAndDelete(req.params.id);
+    if (!deletedMalady) {
+      return res.status(404).json({ error: 'Malady not found' });
+    }
+    res.status(200).json({ message: 'Malady deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting malady:', error);
+    res.status(500).json({ error: 'Failed to delete malady' });
+  }
+});
 
-// Get all medicaments
 app.get('/api/medicaments', async (req, res) => {
   try {
-    const medicaments = await Medicament.find().populate('malady_id', 'maladyName').sort({ medicamentName: 1 });
+    const medicaments = await Medicament.find().populate('malady_id', 'maladyName').sort({ createdAt: -1 });
     res.json({ medicaments, count: medicaments.length });
   } catch (error) {
     console.error('Error fetching medicaments:', error);
@@ -261,7 +206,6 @@ app.get('/api/medicaments', async (req, res) => {
   }
 });
 
-// Get medicaments by malady
 app.get('/api/medicaments/malady/:maladyId', async (req, res) => {
   try {
     const medicaments = await Medicament.find({ malady_id: req.params.maladyId }).populate('malady_id', 'maladyName');
@@ -272,26 +216,40 @@ app.get('/api/medicaments/malady/:maladyId', async (req, res) => {
   }
 });
 
-// Create new medicament
 app.post('/api/medicaments', async (req, res) => {
   try {
-    const { medicamentName, description, malady_id } = req.body;
-    const medicament = new Medicament({ medicamentName, description, malady_id });
+    const { medicamentName, maladyId } = req.body;
+    if (!medicamentName || medicamentName.trim() === '') {
+      return res.status(400).json({ error: 'Medicament name is required' });
+    }
+    if (!maladyId) {
+      return res.status(400).json({ error: 'Malady ID is required' });
+    }
+    const medicament = new Medicament({ 
+      medicamentName: medicamentName.trim(), 
+      malady_id: maladyId 
+    });
     const savedMedicament = await medicament.save();
-    
-    console.log(`✅ Created medicament: ${medicamentName}`);
-    res.status(201).json({ medicament: savedMedicament, message: 'Medicament created successfully' });
+    res.status(201).json({ medicament: savedMedicament });
   } catch (error) {
     console.error('Error creating medicament:', error);
     res.status(400).json({ error: error.message });
   }
 });
 
-// ================================
-// 🏥 API ROUTES - CONSULTATIONS
-// ================================
+app.delete('/api/medicaments/:id', async (req, res) => {
+  try {
+    const deletedMedicament = await Medicament.findByIdAndDelete(req.params.id);
+    if (!deletedMedicament) {
+      return res.status(404).json({ error: 'Medicament not found' });
+    }
+    res.status(200).json({ message: 'Medicament deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting medicament:', error);
+    res.status(500).json({ error: 'Failed to delete medicament' });
+  }
+});
 
-// Get all consultations with full details
 app.get('/api/consultations', async (req, res) => {
   try {
     const consultations = await Consultation.find()
@@ -299,7 +257,6 @@ app.get('/api/consultations', async (req, res) => {
       .populate('malady_id', 'maladyName description')
       .populate('medicament_id', 'medicamentName description')
       .sort({ date: -1 });
-      
     res.json({ consultations, count: consultations.length });
   } catch (error) {
     console.error('Error fetching consultations:', error);
@@ -307,11 +264,9 @@ app.get('/api/consultations', async (req, res) => {
   }
 });
 
-// Create new consultation (Doctor adds patient)
 app.post('/api/consultations', async (req, res) => {
   try {
     const { patient_id, malady_id, medicament_id, date, notes } = req.body;
-    
     const consultation = new Consultation({
       patient_id,
       malady_id,
@@ -319,44 +274,32 @@ app.post('/api/consultations', async (req, res) => {
       date: date || new Date(),
       notes
     });
-    
     const savedConsultation = await consultation.save();
-    
-    // Populate the saved consultation for response
     const populatedConsultation = await Consultation.findById(savedConsultation._id)
       .populate('patient_id', 'firstName lastName email')
       .populate('malady_id', 'maladyName description')
       .populate('medicament_id', 'medicamentName description');
-    
-    console.log(`✅ Created consultation for patient: ${populatedConsultation.patient_id.firstName}`);
-    res.status(201).json({ 
-      consultation: populatedConsultation, 
-      message: 'Consultation created successfully' 
-    });
+    res.status(201).json({ consultation: populatedConsultation });
   } catch (error) {
     console.error('Error creating consultation:', error);
     res.status(400).json({ error: error.message });
   }
 });
 
-// Get consultations by patient
 app.get('/api/consultations/patient/:patientId', async (req, res) => {
   try {
-    const consultations = await Consultation.find({ patient_id: req.params.patientId })
+    const consultations = await Consultation.find({ 
+      patient_id: req.params.patientId
+    })
       .populate('malady_id', 'maladyName description')
       .populate('medicament_id', 'medicamentName description')
       .sort({ date: -1 });
-      
     res.json({ consultations, count: consultations.length });
   } catch (error) {
     console.error('Error fetching patient consultations:', error);
     res.status(500).json({ error: 'Failed to fetch consultations' });
   }
 });
-
-// ================================
-// 🔍 HEALTH CHECK
-// ================================
 
 app.get('/health', (req, res) => {
   const mongoStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
@@ -368,10 +311,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ================================
-// 📊 STATISTICS
-// ================================
-
 app.get('/api/stats', async (req, res) => {
   try {
     const stats = await Promise.all([
@@ -380,7 +319,6 @@ app.get('/api/stats', async (req, res) => {
       Medicament.countDocuments(),
       Consultation.countDocuments()
     ]);
-    
     res.json({
       patients: stats[0],
       maladies: stats[1],
@@ -394,44 +332,11 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-// ================================
-// 🚀 START SERVER
-// ================================
-
-// Connect to MongoDB and start server
 connectToMongoDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`\\n🚀 PharmaX Backend Server running on port ${PORT}`);
-    console.log(`📋 API available at: http://localhost:${PORT}/api`);
-    console.log(`🔍 Health check: http://localhost:${PORT}/health`);
-    
-    console.log(`\\n📚 Available Endpoints:`);
-    console.log('  🏥 PATIENTS:');
-    console.log('    GET    /api/patients           - Get all patients');
-    console.log('    POST   /api/patients           - Create patient');
-    console.log('    GET    /api/patients/:id       - Get patient by ID');
-    console.log('  💊 MALADIES:');
-    console.log('    GET    /api/maladies           - Get all maladies');
-    console.log('    POST   /api/maladies           - Create malady');
-    console.log('  💉 MEDICAMENTS:');
-    console.log('    GET    /api/medicaments        - Get all medicaments');
-    console.log('    GET    /api/medicaments/malady/:id - Get by malady');
-    console.log('    POST   /api/medicaments        - Create medicament');
-    console.log('  🏥 CONSULTATIONS:');
-    console.log('    GET    /api/consultations      - Get all consultations');
-    console.log('    POST   /api/consultations      - Create consultation');
-    console.log('    GET    /api/consultations/patient/:id - Get by patient');
-    console.log('  📊 STATS:');
-    console.log('    GET    /api/stats              - Get statistics');
-    console.log('    GET    /health                 - Health check');
-    
-    console.log(`\\n🛑 Press Ctrl+C to stop server\\n`);
-  });
+  app.listen(PORT);
 });
 
-// Handle graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('\\n🛑 Shutting down server...');
   await mongoose.connection.close();
   process.exit(0);
 });

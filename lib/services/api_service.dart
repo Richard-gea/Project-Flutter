@@ -380,4 +380,117 @@ class ApiService {
       throw Exception('Error fetching consultations: $e');
     }
   }
+
+  // ============ MALADIES CRUD ============
+  
+  // Create malady
+  static Future<Malady> createMalady(Map<String, dynamic> maladyData) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/maladies'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(maladyData),
+      );
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return Malady.fromJson(data['malady'] ?? data);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to create malady: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error creating malady: $e');
+    }
+  }
+
+  // Delete malady
+  static Future<bool> deleteMalady(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/maladies/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to delete malady: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error deleting malady: $e');
+    }
+  }
+
+  // ============ MEDICAMENTS CRUD ============
+  
+  // Create medicament
+  static Future<Medicament> createMedicament(Map<String, dynamic> medicamentData) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/medicaments'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(medicamentData),
+      );
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return Medicament.fromJson(data['medicament'] ?? data);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to create medicament: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error creating medicament: $e');
+    }
+  }
+
+  // Delete medicament
+  static Future<bool> deleteMedicament(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/medicaments/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to delete medicament: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error deleting medicament: $e');
+    }
+  }
+
+  // ============ CONSULTATIONS CRUD ============
+
+  // Soft delete consultation
+  static Future<bool> deleteConsultation(String id) async {
+    try {
+      print('🔄 ApiService: Soft deleting consultation: $id');
+      
+      final response = await http.patch(
+        Uri.parse('$baseUrl/consultations/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('🔄 ApiService: Response status: ${response.statusCode}');
+      
+      if (response.statusCode == 200) {
+        print('✅ ApiService: Successfully soft deleted consultation');
+        return true;
+      } else {
+        final errorData = json.decode(response.body);
+        final errorMsg = errorData['error'] ?? 'Failed to delete consultation';
+        print('❌ ApiService: Server error (${response.statusCode}): $errorMsg');
+        throw Exception('Server error (${response.statusCode}): $errorMsg');
+      }
+    } catch (e) {
+      print('❌ ApiService: Error deleting consultation: $e');
+      throw Exception('Error deleting consultation: $e');
+    }
+  }
 }

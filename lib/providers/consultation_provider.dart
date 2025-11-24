@@ -157,7 +157,7 @@ class ConsultationProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('❌ Error creating patient: $e');
       _setError('Failed to create patient: $e');
-      return null;
+      rethrow; // Re-throw the error so it can be caught by the caller
     }
   }
 
@@ -197,6 +197,102 @@ class ConsultationProvider with ChangeNotifier {
       return _patients.firstWhere((patient) => patient.id == id);
     } catch (e) {
       return null;
+    }
+  }
+
+  // CRUD operations for Maladies
+  Future<bool> createMalady({
+    required String maladyName,
+  
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      final malady = await ApiService.createMalady({
+        'maladyName': maladyName,
+       
+      });
+      
+      _maladies.add(malady);
+      notifyListeners();
+      debugPrint('✅ Created malady: $maladyName');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error creating malady: $e');
+      _setError('Failed to create malady: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> deleteMalady(String id) async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      await ApiService.deleteMalady(id);
+      
+      _maladies.removeWhere((malady) => malady.id == id);
+      notifyListeners();
+      debugPrint('✅ Deleted malady: $id');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error deleting malady: $e');
+      _setError('Failed to delete malady: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // CRUD operations for Medicaments
+  Future<bool> createMedicament({
+    required String medicamentName,
+    
+    required String maladyId,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      final medicament = await ApiService.createMedicament({
+        'medicamentName': medicamentName,
+        
+        'maladyId': maladyId,
+      });
+      
+      _medicaments.add(medicament);
+      notifyListeners();
+      debugPrint('✅ Created medicament: $medicamentName');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error creating medicament: $e');
+      _setError('Failed to create medicament: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> deleteMedicament(String id) async {
+    try {
+      _setLoading(true);
+      _clearError();
+      
+      await ApiService.deleteMedicament(id);
+      
+      _medicaments.removeWhere((medicament) => medicament.id == id);
+      notifyListeners();
+      debugPrint('✅ Deleted medicament: $id');
+      return true;
+    } catch (e) {
+      debugPrint('❌ Error deleting medicament: $e');
+      _setError('Failed to delete medicament: $e');
+      return false;
+    } finally {
+      _setLoading(false);
     }
   }
 

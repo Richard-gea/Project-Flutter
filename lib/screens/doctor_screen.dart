@@ -102,7 +102,18 @@ class _DoctorScreenState extends State<DoctorScreen> {
       }
     } catch (e) {
       if (mounted) {
-        _showErrorDialog('Failed to save patient information: ${e.toString()}');
+        String errorMessage = 'Failed to save patient information';
+        
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('email already exists') || 
+            errorString.contains('duplicate') || 
+            errorString.contains('e11000')) {
+          errorMessage = 'This email is already registered in the system. Please use a different email.';
+        } else {
+          errorMessage = 'Failed to save patient information: ${e.toString()}';
+        }
+        
+        _showErrorDialog(errorMessage);
       }
     } finally {
       if (mounted) {
@@ -258,8 +269,8 @@ class _DoctorScreenState extends State<DoctorScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter first name';
                               }
-                              if (value.trim().length < 5) {
-                                return 'First name must be at least 5 characters';
+                              if (value.trim().length < 3) {
+                                return 'First name must be at least 3 characters';
                               }
                               return null;
                             },
@@ -278,8 +289,8 @@ class _DoctorScreenState extends State<DoctorScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter last name';
                               }
-                              if (value.trim().length < 5) {
-                                return 'Last name must be at least 5 characters';
+                              if (value.trim().length < 3) {
+                                return 'Last name must be at least 3 characters';
                               }
                               return null;
                             },
