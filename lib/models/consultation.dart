@@ -4,7 +4,7 @@ class Consultation {
   final String maladyId;
   final String medicamentId;
   final DateTime date;
-  final String notes;
+ 
   final DateTime? createdAt;
   final DateTime? updatedAt;
   
@@ -19,7 +19,6 @@ class Consultation {
     required this.maladyId,
     required this.medicamentId,
     required this.date,
-    this.notes = '',
     this.createdAt,
     this.updatedAt,
     this.patient,

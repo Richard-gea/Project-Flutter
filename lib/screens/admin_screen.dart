@@ -575,7 +575,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 const SizedBox(width: 16),
                 // Consultations Section
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Card(
                     elevation: 4,
                     child: Padding(
@@ -603,7 +603,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             ],
                           ),
                           const Divider(),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           Expanded(
                             child: provider.consultations.isEmpty
                                 ? const Center(
@@ -651,12 +651,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                               style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                           ),
-                                          DataColumn(
-                                            label: Text(
-                                              'Notes',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
+                                        
                                         ],
                                         rows: provider.consultations.map((consultation) {
                                           // Get patient info
@@ -715,7 +710,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                               DataCell(
                                                 Container(
                                                   padding: const EdgeInsets.symmetric(
-                                                    horizontal: 8,
+                                                    horizontal: 4,
                                                     vertical: 4,
                                                   ),
                                                   decoration: BoxDecoration(
@@ -731,18 +726,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              DataCell(
-                                                SizedBox(
-                                                  width: 150,
-                                                  child: Text(
-                                                    consultation.notes.isEmpty 
-                                                      ? '-' 
-                                                      : consultation.notes,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    maxLines: 2,
-                                                  ),
-                                                ),
-                                              ),
+                                            
                                             ],
                                           );
                                         }).toList(),

@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
       malady_id: maladyId,
       medicament_id: medicamentId,
       date: date || Date.now(),
-      notes: notes || ''
+     
     });
     
     const savedConsultation = await consultation.save();

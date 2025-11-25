@@ -432,6 +432,8 @@ class ApiService {
   // Create consultation
   static Future<Consultation> createConsultation(Map<String, dynamic> consultationData) async {
     try {
+      // Always remove notes field
+      consultationData.remove('notes');
       final response = await http.post(
         Uri.parse('$baseUrl/consultations'),
         headers: {'Content-Type': 'application/json'},
