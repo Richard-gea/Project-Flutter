@@ -9,7 +9,7 @@ import '../services/api_service.dart';
 class ConsultationProvider with ChangeNotifier {
   List<Malady> _maladies = [];
   List<Medicament> _medicaments = [];
-  List<Consultation> _consultations = [];
+  final List<Consultation> _consultations = [];
   List<Patient> _patients = [];
   bool _isLoading = false;
   String? _errorMessage;
@@ -47,7 +47,7 @@ class ConsultationProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error loading maladies: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -59,7 +59,7 @@ class ConsultationProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error loading medicaments: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -71,7 +71,21 @@ class ConsultationProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('❌ Error loading patients: $e');
-      throw e;
+      rethrow;
+    }
+  }
+
+  // Load consultations from database
+  Future<void> loadConsultations() async {
+    try {
+      final consultations = await ApiService.getConsultations();
+      _consultations.clear();
+      _consultations.addAll(consultations);
+      debugPrint('✅ Loaded ${_consultations.length} consultations');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('❌ Error loading consultations: $e');
+      rethrow;
     }
   }
 
@@ -83,6 +97,7 @@ class ConsultationProvider with ChangeNotifier {
         loadMaladies(),
         loadMedicaments(),
         loadPatients(),
+        loadConsultations(),
       ]);
       _clearError();
     } catch (e) {
@@ -106,22 +121,23 @@ class ConsultationProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      final consultation = Consultation(
-        patientId: patientId,
-        maladyId: maladyId,
-        medicamentId: medicamentId,
-        date: DateTime.now(),
-        notes: notes,
-      );
-
       debugPrint('🔄 Creating consultation for patient: $patientId');
-      final newConsultation = await ApiService.createConsultation(consultation);
+      
+      final consultationData = {
+        'patientId': patientId,
+        'maladyId': maladyId,
+        'medicamentId': medicamentId,
+        'date': DateTime.now().toIso8601String(),
+        'notes': notes,
+      };
+      
+      final newConsultation = await ApiService.createConsultation(consultationData);
       
       _consultations.insert(0, newConsultation); // Add to beginning
       _clearError();
       notifyListeners();
       
-      debugPrint('✅ Successfully created consultation: ${newConsultation.id}');
+      debugPrint('✅ Successfully created consultation');
       return true;
     } catch (e) {
       final errorMsg = 'Failed to create consultation: $e';
@@ -158,40 +174,6 @@ class ConsultationProvider with ChangeNotifier {
       debugPrint('❌ Error creating patient: $e');
       _setError('Failed to create patient: $e');
       rethrow; // Re-throw the error so it can be caught by the caller
-    }
-  }
-
-  // Load consultations from database
-  Future<void> loadConsultations() async {
-    try {
-      _consultations = await ApiService.getConsultations();
-      debugPrint('✅ Loaded ${_consultations.length} consultations');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('❌ Error loading consultations: $e');
-      _setError('Failed to load consultations: $e');
-    }
-  }
-
-  // Delete consultation (soft delete)
-  Future<bool> deleteConsultation(String id) async {
-    try {
-      _setLoading(true);
-      _clearError();
-      
-      await ApiService.deleteConsultation(id);
-      
-      // Remove from local list
-      _consultations.removeWhere((consultation) => consultation.id == id);
-      notifyListeners();
-      debugPrint('✅ Deleted consultation: $id');
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error deleting consultation: $e');
-      _setError('Failed to delete consultation: $e');
-      return false;
-    } finally {
-      _setLoading(false);
     }
   }
 

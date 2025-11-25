@@ -114,51 +114,51 @@ class ApiService {
   }
 
   // Update a patient
-  static Future<Patient> updatePatient(String id, Patient patient) async {
-    try {
-      final Map<String, dynamic> patientData = patient.toJson();
-      // Remove id and timestamps for update
-      patientData.removeWhere((key, value) => 
-        key == '_id' || key == 'createdAt' || key == 'updatedAt');
+  // static Future<Patient> updatePatient(String id, Patient patient) async {
+  //   try {
+  //     final Map<String, dynamic> patientData = patient.toJson();
+  //     // Remove id and timestamps for update
+  //     patientData.removeWhere((key, value) => 
+  //       key == '_id' || key == 'createdAt' || key == 'updatedAt');
 
-      final response = await http.put(
-        Uri.parse('$baseUrl/patients/$id'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(patientData),
-      );
+  //     final response = await http.put(
+  //       Uri.parse('$baseUrl/patients/$id'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode(patientData),
+  //     );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-        // The new backend returns the patient in a 'patient' field
-        final patientJson = jsonData['patient'] ?? jsonData;
-        return Patient.fromJson(patientJson);
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['error'] ?? 'Failed to update patient');
-      }
-    } catch (e) {
-      throw Exception('Error updating patient: $e');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> jsonData = json.decode(response.body);
+  //       // The new backend returns the patient in a 'patient' field
+  //       final patientJson = jsonData['patient'] ?? jsonData;
+  //       return Patient.fromJson(patientJson);
+  //     } else {
+  //       final errorData = json.decode(response.body);
+  //       throw Exception(errorData['error'] ?? 'Failed to update patient');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error updating patient: $e');
+  //   }
+  // }
 
   // Delete a patient
-  static Future<bool> deletePatient(String id) async {
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/patients/$id'),
-        headers: {'Content-Type': 'application/json'},
-      );
+  // static Future<bool> deletePatient(String id) async {
+  //   try {
+  //     final response = await http.delete(
+  //       Uri.parse('$baseUrl/patients/$id'),
+  //       headers: {'Content-Type': 'application/json'},
+  //     );
 
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['error'] ?? 'Failed to delete patient');
-      }
-    } catch (e) {
-      throw Exception('Error deleting patient: $e');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       return true;
+  //     } else {
+  //       final errorData = json.decode(response.body);
+  //       throw Exception(errorData['error'] ?? 'Failed to delete patient');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error deleting patient: $e');
+  //   }
+  // }
 
   // Search patients by name or phone
   static Future<List<Patient>> searchPatients(String query) async {
@@ -208,43 +208,39 @@ class ApiService {
   }
 
   // Get database statistics
-  static Future<Map<String, dynamic>> getStatistics() async {
-    if (testMode) {
-      print('🧪 Test Mode: Simulating statistics');
-      await Future.delayed(const Duration(milliseconds: 300));
-      return {
-        'totalPatients': _mockIdCounter - 1,
-        'recentPatients': 2,
-        'sickTypeDistribution': [
-          {'_id': 'Flu', 'count': 3},
-          {'_id': 'Headache', 'count': 2},
-          {'_id': 'Fever', 'count': 1},
-        ],
-        'generatedAt': DateTime.now().toIso8601String(),
-      };
-    }
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/stats'),
-        headers: {'Content-Type': 'application/json'},
-      );
+  // static Future<Map<String, dynamic>> getStatistics() async {
+  //   if (testMode) {
+  //     print('🧪 Test Mode: Simulating statistics');
+  //     await Future.delayed(const Duration(milliseconds: 300));
+  //     return {
+  //       'totalPatients': _mockIdCounter - 1,
+  //       'recentPatients': 2,
+  //       'sickTypeDistribution': [
+  //         {'_id': 'Flu', 'count': 3},
+  //         {'_id': 'Headache', 'count': 2},
+  //         {'_id': 'Fever', 'count': 1},
+  //       ],
+  //       'generatedAt': DateTime.now().toIso8601String(),
+  //     };
+  //   }
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse('$baseUrl/stats'),
+  //       headers: {'Content-Type': 'application/json'},
+  //     );
 
-      if (response.statusCode == 200) {
-        return json.decode(response.body);
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception(errorData['error'] ?? 'Failed to get statistics');
-      }
-    } catch (e) {
-      throw Exception('Error fetching statistics: $e');
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       return json.decode(response.body);
+  //     } else {
+  //       final errorData = json.decode(response.body);
+  //       throw Exception(errorData['error'] ?? 'Failed to get statistics');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error fetching statistics: $e');
+  //   }
+  // }
 
-  // ================================
-  // 💊 MALADY OPERATIONS
-  // ================================
 
-  // Get all maladies
   static Future<List<Malady>> getMaladies() async {
     try {
       final response = await http.get(
@@ -265,9 +261,7 @@ class ApiService {
     }
   }
 
-  // ================================
-  // 💉 MEDICAMENT OPERATIONS
-  // ================================
+
 
   // Get all medicaments
   static Future<List<Medicament>> getMedicaments() async {
@@ -311,79 +305,7 @@ class ApiService {
     }
   }
 
-  // ================================
-  // 🏥 CONSULTATION OPERATIONS
-  // ================================
 
-  // Create a new consultation
-  static Future<Consultation> createConsultation(Consultation consultation) async {
-    try {
-      print('🔄 ApiService: Creating consultation for patient: ${consultation.patientId}');
-      
-      final Map<String, dynamic> consultationData = consultation.toJson();
-      
-      print('🔄 ApiService: Sending POST request to $baseUrl/consultations');
-      print('🔄 ApiService: Consultation data: $consultationData');
-
-      final response = await http.post(
-        Uri.parse('$baseUrl/consultations'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(consultationData),
-      );
-
-      print('🔄 ApiService: Response status: ${response.statusCode}');
-      print('🔄 ApiService: Response body: ${response.body}');
-
-      if (response.statusCode == 201) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-        final consultationJson = jsonData['consultation'] ?? jsonData;
-        final newConsultation = Consultation.fromJson(consultationJson);
-        print('✅ ApiService: Successfully created consultation with ID: ${newConsultation.id}');
-        return newConsultation;
-      } else {
-        final errorData = json.decode(response.body);
-        final errorMsg = errorData['error'] ?? 'Failed to create consultation';
-        print('❌ ApiService: Server error (${response.statusCode}): $errorMsg');
-        throw Exception('Server error (${response.statusCode}): $errorMsg');
-      }
-    } catch (e, stackTrace) {
-      print('❌ ApiService: Exception in createConsultation: $e');
-      print('❌ ApiService: Stack trace: $stackTrace');
-      
-      if (e.toString().contains('Connection refused') || e.toString().contains('network')) {
-        throw Exception('Cannot connect to server. Please check if the backend is running on $baseUrl');
-      } else if (e.toString().contains('SocketException')) {
-        throw Exception('Network error. Please check your internet connection and server URL.');
-      } else {
-        throw Exception('Error creating consultation: $e');
-      }
-    }
-  }
-
-  // Get all consultations
-  static Future<List<Consultation>> getConsultations() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/consultations'),
-        headers: {'Content-Type': 'application/json'},
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-        final List<dynamic> consultationsData = jsonData['consultations'] ?? jsonData;
-        return consultationsData.map((json) => Consultation.fromJson(json)).toList();
-      } else {
-        final errorData = json.decode(response.body);
-        throw Exception('Failed to load consultations: ${errorData['error'] ?? response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Error fetching consultations: $e');
-    }
-  }
-
-  // ============ MALADIES CRUD ============
-  
-  // Create malady
   static Future<Malady> createMalady(Map<String, dynamic> maladyData) async {
     try {
       final response = await http.post(
@@ -423,7 +345,7 @@ class ApiService {
     }
   }
 
-  // ============ MEDICAMENTS CRUD ============
+  
   
   // Create medicament
   static Future<Medicament> createMedicament(Map<String, dynamic> medicamentData) async {
@@ -465,32 +387,86 @@ class ApiService {
     }
   }
 
-  // ============ CONSULTATIONS CRUD ============
-
-  // Soft delete consultation
-  static Future<bool> deleteConsultation(String id) async {
+  // Get all consultations
+  static Future<List<Consultation>> getConsultations() async {
     try {
-      print('🔄 ApiService: Soft deleting consultation: $id');
-      
-      final response = await http.patch(
+      final response = await http.get(
+        Uri.parse('$baseUrl/consultations'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        final List<dynamic> consultationsData = jsonData['consultations'] ?? jsonData;
+        return consultationsData.map((json) => Consultation.fromJson(json)).toList();
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to load consultations: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching consultations: $e');
+    }
+  }
+
+  // Get consultation by ID
+  static Future<Consultation> getConsultation(String id) async {
+    try {
+      final response = await http.get(
         Uri.parse('$baseUrl/consultations/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
-      print('🔄 ApiService: Response status: ${response.statusCode}');
-      
       if (response.statusCode == 200) {
-        print('✅ ApiService: Successfully soft deleted consultation');
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+        final consultationData = jsonData['consultation'] ?? jsonData;
+        return Consultation.fromJson(consultationData);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to load consultation: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching consultation: $e');
+    }
+  }
+
+  // Create consultation
+  static Future<Consultation> createConsultation(Map<String, dynamic> consultationData) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/consultations'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(consultationData),
+      );
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        return Consultation.fromJson(data['consultation'] ?? data);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception('Failed to create consultation: ${errorData['error'] ?? response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error creating consultation: $e');
+    }
+  }
+
+  // Delete consultation
+  static Future<bool> deleteConsultation(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/consultations/$id'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
         return true;
       } else {
         final errorData = json.decode(response.body);
-        final errorMsg = errorData['error'] ?? 'Failed to delete consultation';
-        print('❌ ApiService: Server error (${response.statusCode}): $errorMsg');
-        throw Exception('Server error (${response.statusCode}): $errorMsg');
+        throw Exception('Failed to delete consultation: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
-      print('❌ ApiService: Error deleting consultation: $e');
       throw Exception('Error deleting consultation: $e');
     }
   }
+
 }

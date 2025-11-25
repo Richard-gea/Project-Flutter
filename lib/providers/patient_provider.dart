@@ -22,7 +22,7 @@ class PatientProvider with ChangeNotifier {
   // Initialize and test MongoDB connection
   Future<void> initializeConnection() async {
     await loadPatients();
-    await loadStatistics();
+    
   }
 
   // Test connection to MongoDB
@@ -76,13 +76,7 @@ class PatientProvider with ChangeNotifier {
       notifyListeners();
       debugPrint('✅ Successfully added patient: ${newPatient.firstName} ${newPatient.lastName}');
       
-      try {
-        await loadStatistics(); // Refresh stats
-        debugPrint('✅ PatientProvider: Statistics refreshed');
-      } catch (statsError) {
-        debugPrint('⚠️ PatientProvider: Failed to refresh statistics: $statsError');
-        // Don't fail the whole operation for stats
-      }
+    
       
       return true;
     } catch (e, stackTrace) {
@@ -97,51 +91,51 @@ class PatientProvider with ChangeNotifier {
   }
 
   // Update an existing patient in MongoDB
-  Future<bool> updatePatient(String id, Patient patient) async {
-    _setLoading(true);
-    try {
-      final updatedPatient = await ApiService.updatePatient(id, patient);
-      final index = _patients.indexWhere((p) => p.id == id);
-      if (index != -1) {
-        _patients[index] = updatedPatient;
-        _clearError();
-        notifyListeners();
-        debugPrint('✅ Successfully updated patient: ${updatedPatient.firstName} ${updatedPatient.lastName}');
-        await loadStatistics(); // Refresh stats
-        return true;
-      }
-      return false;
-    } catch (e) {
-      _setError('Failed to update patient: $e');
-      debugPrint('❌ Error updating patient: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
+  // Future<bool> updatePatient(String id, Patient patient) async {
+  //   _setLoading(true);
+  //   try {
+  //     final updatedPatient = await ApiService.updatePatient(id, patient);
+  //     final index = _patients.indexWhere((p) => p.id == id);
+  //     if (index != -1) {
+  //       _patients[index] = updatedPatient;
+  //       _clearError();
+  //       notifyListeners();
+  //       debugPrint('✅ Successfully updated patient: ${updatedPatient.firstName} ${updatedPatient.lastName}');
+  //       await loadStatistics(); // Refresh stats
+  //       return true;
+  //     }
+  //     return false;
+  //   } catch (e) {
+  //     _setError('Failed to update patient: $e');
+  //     debugPrint('❌ Error updating patient: $e');
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
 
   // Delete a patient from MongoDB
-  Future<bool> deletePatient(String id) async {
-    _setLoading(true);
-    try {
-      final success = await ApiService.deletePatient(id);
-      if (success) {
-        _patients.removeWhere((patient) => patient.id == id);
-        _clearError();
-        notifyListeners();
-        debugPrint('✅ Successfully deleted patient with ID: $id');
-        await loadStatistics(); // Refresh stats
-        return true;
-      }
-      return false;
-    } catch (e) {
-      _setError('Failed to delete patient: $e');
-      debugPrint('❌ Error deleting patient: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
+  // Future<bool> deletePatient(String id) async {
+  //   _setLoading(true);
+  //   try {
+  //     final success = await ApiService.deletePatient(id);
+  //     if (success) {
+  //       _patients.removeWhere((patient) => patient.id == id);
+  //       _clearError();
+  //       notifyListeners();
+  //       debugPrint('✅ Successfully deleted patient with ID: $id');
+  //       await loadStatistics(); // Refresh stats
+  //       return true;
+  //     }
+  //     return false;
+  //   } catch (e) {
+  //     _setError('Failed to delete patient: $e');
+  //     debugPrint('❌ Error deleting patient: $e');
+  //     return false;
+  //   } finally {
+  //     _setLoading(false);
+  //   }
+  // }
 
   // Search patients in MongoDB
   Future<void> searchPatients(String query) async {
@@ -163,27 +157,16 @@ class PatientProvider with ChangeNotifier {
     }
   }
 
-  // Load statistics from MongoDB
-  Future<void> loadStatistics() async {
-    try {
-      _statistics = await ApiService.getStatistics();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('⚠️ Could not load statistics: $e');
-      // Don't set error for statistics as it's not critical
-    }
-  }
-
-  // Get patients statistics by email domain
-  Map<String, int> getPatientsStatistics() {
-    final Map<String, int> stats = {};
-    for (final patient in _patients) {
-      final domain = patient.email.split('@').last;
-      final domainKey = domain.isNotEmpty ? domain : 'Unknown';
-      stats[domainKey] = (stats[domainKey] ?? 0) + 1;
-    }
-    return stats;
-  }
+  // // Get patients statistics by email domain
+  // Map<String, int> getPatientsStatistics() {
+  //   final Map<String, int> stats = {};
+  //   for (final patient in _patients) {
+  //     final domain = patient.email.split('@').last;
+  //     final domainKey = domain.isNotEmpty ? domain : 'Unknown';
+  //     stats[domainKey] = (stats[domainKey] ?? 0) + 1;
+  //   }
+  //   return stats;
+  // }
 
   // Get total patients count
   int get totalPatients => _patients.length;

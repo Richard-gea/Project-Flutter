@@ -37,6 +37,7 @@ class _AdminScreenState extends State<AdminScreen> {
       final provider = context.read<ConsultationProvider>();
       provider.loadMaladies();
       provider.loadMedicaments();
+      provider.loadConsultations();
     });
   }
 
@@ -564,6 +565,189 @@ class _AdminScreenState extends State<AdminScreen> {
                                         ),
                                       );
                                     },
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Consultations Section
+                Expanded(
+                  flex: 2,
+                  child: Card(
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Consultations",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "${provider.consultations.length} records",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Expanded(
+                            child: provider.consultations.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      "No consultations recorded yet.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  )
+                                : SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: SingleChildScrollView(
+                                      child: DataTable(
+                                        headingRowColor: MaterialStateProperty.all(
+                                          Colors.blue.shade50,
+                                        ),
+                                        columns: const [
+                                          DataColumn(
+                                            label: Text(
+                                              'Date',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Patient',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Email',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Malady',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Medicament',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Notes',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ],
+                                        rows: provider.consultations.map((consultation) {
+                                          // Get patient info
+                                          String patientName = 'Unknown';
+                                          String patientEmail = '';
+                                          if (consultation.patient != null) {
+                                            patientName = '${consultation.patient!['firstName']} ${consultation.patient!['lastName']}';
+                                            patientEmail = consultation.patient!['email'] ?? '';
+                                          }
+                                          
+                                          // Get malady name
+                                          String maladyName = 'Unknown';
+                                          if (consultation.malady != null) {
+                                            maladyName = consultation.malady!['maladyName'];
+                                          }
+                                          
+                                          // Get medicament name
+                                          String medicamentName = 'Unknown';
+                                          if (consultation.medicament != null) {
+                                            medicamentName = consultation.medicament!['medicamentName'];
+                                          }
+                                          
+                                          return DataRow(
+                                            cells: [
+                                              DataCell(
+                                                Text(
+                                                  '${consultation.date.day}/${consultation.date.month}/${consultation.date.year}',
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Text(
+                                                  patientName,
+                                                  style: const TextStyle(fontWeight: FontWeight.w500),
+                                                ),
+                                              ),
+                                              DataCell(Text(patientEmail)),
+                                              DataCell(
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red.shade50,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                  ),
+                                                  child: Text(
+                                                    maladyName,
+                                                    style: TextStyle(
+                                                      color: Colors.red.shade700,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.green.shade50,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                  ),
+                                                  child: Text(
+                                                    medicamentName,
+                                                    style: TextStyle(
+                                                      color: Colors.green.shade700,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              DataCell(
+                                                SizedBox(
+                                                  width: 150,
+                                                  child: Text(
+                                                    consultation.notes.isEmpty 
+                                                      ? '-' 
+                                                      : consultation.notes,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
                                   ),
                           ),
                         ],

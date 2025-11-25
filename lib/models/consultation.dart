@@ -48,7 +48,7 @@ class Consultation {
       date: json['date'] != null 
           ? DateTime.parse(json['date'])
           : DateTime.now(),
-      notes: json['notes'] ?? '',
+     
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt'])
           : null,
@@ -74,7 +74,7 @@ class Consultation {
       'malady_id': maladyId,
       'medicament_id': medicamentId,
       'date': date.toIso8601String(),
-      'notes': notes,
+    
     };
   }
 
