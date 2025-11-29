@@ -1,7 +1,20 @@
+// ...existing code...
+
+const mongoose = require('mongoose');
+
+app.get('/health', (req, res) => {
+  const mongoStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    database: mongoStatus
+  });
+});
 const express = require('express');
 const cors = require('cors');
 const connectToMongoDB = require('./config/database');
 const mongoose = require('mongoose');
+
 
 const patientRoutes = require('./routes/patients');
 const maladyRoutes = require('./routes/maladies');
