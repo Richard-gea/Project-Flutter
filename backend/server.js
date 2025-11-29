@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectToMongoDB = require('./config/database');
+const mongoose = require('mongoose');
 
 const patientRoutes = require('./routes/patients');
 const maladyRoutes = require('./routes/maladies');

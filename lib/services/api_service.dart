@@ -6,27 +6,8 @@ import '../models/medicament.dart';
 import '../models/consultation.dart';
 
 class ApiService {
-  // Change this to your actual MongoDB/Node.js backend URL
-  // For local MongoDB at mongodb://127.0.0.1:27017
   static const String baseUrl = 'http://127.0.0.1:3000/api';
-  
-  // Test mode - set to true to simulate successful operations without backend
-  static const bool testMode = false;
-  
-  // Mock patient ID counter for test mode
-  static int _mockIdCounter = 1;
-
-  // Get all patients
   static Future<List<Patient>> getPatients() async {
-    if (testMode) {
-      print('🧪 Test Mode: Simulating patient retrieval');
-      await Future.delayed(const Duration(milliseconds: 300));
-      
-      // Return mock patients
-      
-      
-     
-    }
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/patients'),
@@ -35,7 +16,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(response.body);
-        // The new backend returns patients in a 'patients' field with pagination info
+ 
         final List<dynamic> patientsData = jsonData['patients'] ?? jsonData;
         return patientsData.map((json) => Patient.fromJson(json)).toList();
       } else {
@@ -49,24 +30,7 @@ class ApiService {
 
   // Create a new patient
   static Future<Patient> createPatient(Patient patient) async {
-    if (testMode) {
-      print('🧪 Test Mode: Simulating patient creation');
-      // Simulate network delay
-      await Future.delayed(const Duration(milliseconds: 500));
-      
-      // Return a mock patient with generated ID
-      final mockPatient = Patient(
-        id: 'mock_${_mockIdCounter++}',
-        firstName: patient.firstName,
-        lastName: patient.lastName,
-        email: patient.email,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-      
-      print('✅ Test Mode: Mock patient created with ID: ${mockPatient.id}');
-      return mockPatient;
-    }
+    
     try {
       print('🔄 ApiService: Creating patient for ${patient.firstName} ${patient.lastName}');
       
@@ -113,52 +77,6 @@ class ApiService {
     }
   }
 
-  // Update a patient
-  // static Future<Patient> updatePatient(String id, Patient patient) async {
-  //   try {
-  //     final Map<String, dynamic> patientData = patient.toJson();
-  //     // Remove id and timestamps for update
-  //     patientData.removeWhere((key, value) => 
-  //       key == '_id' || key == 'createdAt' || key == 'updatedAt');
-
-  //     final response = await http.put(
-  //       Uri.parse('$baseUrl/patients/$id'),
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: json.encode(patientData),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> jsonData = json.decode(response.body);
-  //       // The new backend returns the patient in a 'patient' field
-  //       final patientJson = jsonData['patient'] ?? jsonData;
-  //       return Patient.fromJson(patientJson);
-  //     } else {
-  //       final errorData = json.decode(response.body);
-  //       throw Exception(errorData['error'] ?? 'Failed to update patient');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error updating patient: $e');
-  //   }
-  // }
-
-  // Delete a patient
-  // static Future<bool> deletePatient(String id) async {
-  //   try {
-  //     final response = await http.delete(
-  //       Uri.parse('$baseUrl/patients/$id'),
-  //       headers: {'Content-Type': 'application/json'},
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return true;
-  //     } else {
-  //       final errorData = json.decode(response.body);
-  //       throw Exception(errorData['error'] ?? 'Failed to delete patient');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error deleting patient: $e');
-  //   }
-  // }
 
   // Search patients by name or phone
   static Future<List<Patient>> searchPatients(String query) async {
@@ -182,15 +100,7 @@ class ApiService {
 
   // Get API health status
   static Future<Map<String, dynamic>> getHealthStatus() async {
-    if (testMode) {
-      print('🧪 Test Mode: Simulating health check');
-      await Future.delayed(const Duration(milliseconds: 200));
-      return {
-        'status': 'OK',
-        'message': 'Test mode - simulated connection',
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-    }
+  
     try {
       final response = await http.get(
         Uri.parse('${baseUrl.replaceAll('/api', '')}/health'),
@@ -206,39 +116,6 @@ class ApiService {
       throw Exception('Error checking health: $e');
     }
   }
-
-  // Get database statistics
-  // static Future<Map<String, dynamic>> getStatistics() async {
-  //   if (testMode) {
-  //     print('🧪 Test Mode: Simulating statistics');
-  //     await Future.delayed(const Duration(milliseconds: 300));
-  //     return {
-  //       'totalPatients': _mockIdCounter - 1,
-  //       'recentPatients': 2,
-  //       'sickTypeDistribution': [
-  //         {'_id': 'Flu', 'count': 3},
-  //         {'_id': 'Headache', 'count': 2},
-  //         {'_id': 'Fever', 'count': 1},
-  //       ],
-  //       'generatedAt': DateTime.now().toIso8601String(),
-  //     };
-  //   }
-  //   try {
-  //     final response = await http.get(
-  //       Uri.parse('$baseUrl/stats'),
-  //       headers: {'Content-Type': 'application/json'},
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return json.decode(response.body);
-  //     } else {
-  //       final errorData = json.decode(response.body);
-  //       throw Exception(errorData['error'] ?? 'Failed to get statistics');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error fetching statistics: $e');
-  //   }
-  // }
 
 
   static Future<List<Malady>> getMaladies() async {
@@ -386,24 +263,32 @@ class ApiService {
       throw Exception('Error deleting medicament: $e');
     }
   }
-
   // Get all consultations
   static Future<List<Consultation>> getConsultations() async {
     try {
+      // 1. Send HTTP GET request to the backend endpoint
       final response = await http.get(
         Uri.parse('$baseUrl/consultations'),
         headers: {'Content-Type': 'application/json'},
       );
 
+      // 2. Check if the response status is OK (200)
       if (response.statusCode == 200) {
+        // 3. Decode the JSON response body to a Dart Map
         final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        // 4. Extract the list of consultations from the JSON (usually under a key)
         final List<dynamic> consultationsData = jsonData['consultations'] ?? jsonData;
+
+        // 5. Map each JSON object to a Consultation model and return as a List
         return consultationsData.map((json) => Consultation.fromJson(json)).toList();
       } else {
+        // 6. Handle error response
         final errorData = json.decode(response.body);
         throw Exception('Failed to load consultations: ${errorData['error'] ?? response.statusCode}');
       }
     } catch (e) {
+      // 7. Handle exceptions
       throw Exception('Error fetching consultations: $e');
     }
   }

@@ -44,7 +44,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
     if (maladyId != null) {
       setState(() {
         _selectedMaladyId = maladyId;
-        // Reset medicament selection when malady changes
+        
         _selectedMedicamentId = null;
       });
     }
@@ -73,7 +73,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
       final consultationProvider =
           Provider.of<ConsultationProvider>(context, listen: false);
 
-      // First create the patient
+     
       final patient = await consultationProvider.createPatient(
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
@@ -96,7 +96,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
       }
 
       if (mounted) {
-        // Clear form on success
+       
 
         _showSuccessDialog();
       }
@@ -201,7 +201,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header
+                
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -240,7 +240,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
                   const SizedBox(height: 24),
 
-                  // Patient Information Form
+                 
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -258,7 +258,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          // First Name
+    
                           TextFormField(
                             controller: _firstNameController,
                             decoration: const InputDecoration(
@@ -278,7 +278,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
                           const SizedBox(height: 16),
 
-                          // Last Name
+                          
                           TextFormField(
                             controller: _lastNameController,
                             decoration: const InputDecoration(
@@ -298,7 +298,7 @@ class _DoctorScreenState extends State<DoctorScreen> {
 
                           const SizedBox(height: 16),
 
-                          // Email Address
+                          
                           TextFormField(
                             controller: _emailController,
                             decoration: const InputDecoration(
@@ -310,11 +310,11 @@ class _DoctorScreenState extends State<DoctorScreen> {
                               if (value == null || value.trim().isEmpty) {
                                 return 'Please enter email address';
                               }
-                              // Email validation
+                            
                               if (!EmailValidator.validate(value)) {
                                 return 'Please enter a valid email address';
                               }
-                              return null; // Return null if the input is valid
+                              return null; 
                             },
                           ),
                         ],

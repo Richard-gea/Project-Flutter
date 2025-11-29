@@ -8,7 +8,7 @@ class Consultation {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   
-  // Populated fields when fetched with relations
+ 
   final Map<String, dynamic>? patient;
   final Map<String, dynamic>? malady;
   final Map<String, dynamic>? medicament;

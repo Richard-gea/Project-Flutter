@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'PharmaX - MongoDB',
+          'PharmaX',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -21,20 +21,6 @@ class HomeScreen extends StatelessWidget {
         ),
         backgroundColor: primary,
         elevation: 0,
-        actions: [
-          Consumer<PatientProvider>(
-            builder: (context, provider, child) {
-              return IconButton(
-                onPressed: () => provider.retryConnection(),
-                icon: Icon(
-                  provider.connectionIcon,
-                  color: Colors.white,
-                ),
-                tooltip: provider.connectionStatus,
-              );
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -44,10 +30,7 @@ class HomeScreen extends StatelessWidget {
             Text(
               'Welcome to PharmaX',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: primary,
+              style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: primary,
               ),
             ),
             const SizedBox(height: 8),
@@ -98,7 +81,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Card version
+  
   Widget _roleTile(
     BuildContext context, {
     required String title,

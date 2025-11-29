@@ -51,7 +51,7 @@ class ConsultationProvider with ChangeNotifier {
     }
   }
 
-  // Load all medicaments from database
+
   Future<void> loadMedicaments() async {
     try {
       _medicaments = await ApiService.getMedicaments();
@@ -63,7 +63,6 @@ class ConsultationProvider with ChangeNotifier {
     }
   }
 
-  // Load patients from database
   Future<void> loadPatients() async {
     try {
       _patients = await ApiService.getPatients();
@@ -75,21 +74,21 @@ class ConsultationProvider with ChangeNotifier {
     }
   }
 
-  // Load consultations from database
+ 
   Future<void> loadConsultations() async {
     try {
       final consultations = await ApiService.getConsultations();
       _consultations.clear();
       _consultations.addAll(consultations);
-      debugPrint('✅ Loaded ${_consultations.length} consultations');
+      debugPrint('Loaded ${_consultations.length} consultations');
       notifyListeners();
     } catch (e) {
-      debugPrint('❌ Error loading consultations: $e');
+      debugPrint(' Error loading consultations: $e');
       rethrow;
     }
   }
 
-  // Initialize data by loading from database
+ 
   Future<void> initialize() async {
     _setLoading(true);
     try {

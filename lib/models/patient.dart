@@ -44,7 +44,7 @@ class Patient {
     );
   }
 
-  // Convert to JSON (for MongoDB request)
+ 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
       'firstName': firstName,
@@ -59,7 +59,7 @@ class Patient {
     return data;
   }
 
-  // Convert to JSON for update (exclude timestamps)
+  
   Map<String, dynamic> toJsonForUpdate() {
     return {
       'firstName': firstName,
@@ -69,7 +69,6 @@ class Patient {
     };
   }
 
-  // Copy with method for immutable updates
   Patient copyWith({
     String? id,
     String? firstName,
