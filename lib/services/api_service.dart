@@ -6,7 +6,9 @@ import '../models/medicament.dart';
 import '../models/consultation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://127.0.0.1:3000/api';
+  static const String baseUrl = 'http://13.212.165.59:3000/api';
+
+  // static const String baseUrl = 'http://127.0.0.1:3000/api';
   static Future<List<Patient>> getPatients() async {
     try {
       final response = await http.get(

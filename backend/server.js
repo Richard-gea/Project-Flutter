@@ -1,15 +1,3 @@
-// ...existing code...
-
-const mongoose = require('mongoose');
-
-app.get('/health', (req, res) => {
-  const mongoStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    database: mongoStatus
-  });
-});
 const express = require('express');
 const cors = require('cors');
 const connectToMongoDB = require('./config/database');
@@ -31,6 +19,8 @@ app.use('/api/patients', patientRoutes);
 app.use('/api/maladies', maladyRoutes);
 app.use('/api/medicaments', medicamentRoutes);
 app.use('/api/consultations', consultationRoutes);
+
+
 
 connectToMongoDB().then(() => {
   app.listen(PORT, () => {
