@@ -6,7 +6,7 @@ import '../models/medicament.dart';
 import '../models/consultation.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://13.214.201.93';//omly dd ip becuae inginx route to nodes
+  static const String baseUrl = 'http://13.214.201.93/api';//omly dd ip becuae inginx route to nodes
 
   // static const String baseUrl = 'http://127.0.0.1:3000/api';
   static Future<List<Patient>> getPatients() async {
