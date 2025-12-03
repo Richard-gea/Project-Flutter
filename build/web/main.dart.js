@@ -24497,7 +24497,7 @@ var $async$Gn=A.N(function(a,b){if(a===1){o=b
 s=p}while(true)switch(s){case 0:p=4
 i=t.N
 s=7
-return A.P(A.apb(A.dr("http://13.214.201.93/api/patients"),A.ap(["Content-Type","application/json"],i,i)),$async$Gn)
+return A.P(A.apb(A.dr("http://13.49.64.170/api/patients"),A.ap(["Content-Type","application/json"],i,i)),$async$Gn)
 case 7:n=b
 if(n.b===200){i=n
 m=B.Z.be(0,A.e5(A.e4(i.e)).be(0,i.w))
@@ -24533,9 +24533,9 @@ s=p}while(true)switch(s){case 0:p=4
 A.hq("\ud83d\udd04 ApiService: Creating patient for "+a1.b+" "+a1.c)
 n=a1.it()
 J.G8(n,new A.XJ())
-A.hq("\ud83d\udd04 ApiService: Sending POST request to http://13.214.201.93/api/patients")
+A.hq("\ud83d\udd04 ApiService: Sending POST request to http://13.49.64.170/api/patients")
 A.hq("\ud83d\udd04 ApiService: Patient data: "+A.j(n))
-e=A.dr("http://13.214.201.93/api/patients")
+e=A.dr("http://13.49.64.170/api/patients")
 d=t.N
 d=A.ap(["Content-Type","application/json"],d,d)
 s=7
@@ -24567,7 +24567,7 @@ g=A.aj(a0)
 f=A.b_(a0)
 A.hq("\u274c ApiService: Exception in createPatient: "+A.j(g))
 A.hq("\u274c ApiService: Stack trace: "+A.j(f))
-if(B.d.p(J.bP(g),"Connection refused")||B.d.p(J.bP(g),"network"))throw A.e(A.bB("Cannot connect to server. Please check if the backend is running on http://13.214.201.93/api"))
+if(B.d.p(J.bP(g),"Connection refused")||B.d.p(J.bP(g),"network"))throw A.e(A.bB("Cannot connect to server. Please check if the backend is running on http://13.49.64.170/api"))
 else if(B.d.p(J.bP(g),"SocketException"))throw A.e(A.bB("Network error. Please check your internet connection and server URL."))
 else throw A.e(A.bB("Error creating patient: "+A.j(g)))
 s=6
@@ -24582,7 +24582,7 @@ var $async$XO=A.N(function(a,b){if(a===1){o=b
 s=p}while(true)switch(s){case 0:p=4
 i=t.N
 s=7
-return A.P(A.apb(A.dr("http://13.214.201.93/api/maladies"),A.ap(["Content-Type","application/json"],i,i)),$async$XO)
+return A.P(A.apb(A.dr("http://13.49.64.170/api/maladies"),A.ap(["Content-Type","application/json"],i,i)),$async$XO)
 case 7:n=b
 if(n.b===200){i=n
 m=B.Z.be(0,A.e5(A.e4(i.e)).be(0,i.w))
@@ -24616,7 +24616,7 @@ var $async$XQ=A.N(function(a,b){if(a===1){o=b
 s=p}while(true)switch(s){case 0:p=4
 i=t.N
 s=7
-return A.P(A.apb(A.dr("http://13.214.201.93/api/medicaments"),A.ap(["Content-Type","application/json"],i,i)),$async$XQ)
+return A.P(A.apb(A.dr("http://13.49.64.170/api/medicaments"),A.ap(["Content-Type","application/json"],i,i)),$async$XQ)
 case 7:n=b
 if(n.b===200){i=n
 m=B.Z.be(0,A.e5(A.e4(i.e)).be(0,i.w))
@@ -24649,7 +24649,7 @@ XG(a){return A.aDM(a)},
 aDM(a){var s=0,r=A.M(t.lw),q,p=2,o,n,m,l,k,j,i,h,g
 var $async$XG=A.N(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:p=4
-j=A.dr("http://13.214.201.93/api/maladies")
+j=A.dr("http://13.49.64.170/api/maladies")
 i=t.N
 i=A.ap(["Content-Type","application/json"],i,i)
 s=7
@@ -24686,7 +24686,7 @@ var $async$XK=A.N(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:p=4
 k=t.N
 s=7
-return A.P(A.asQ(A.dr("http://13.214.201.93/api/maladies/"+a),A.ap(["Content-Type","application/json"],k,k)),$async$XK)
+return A.P(A.asQ(A.dr("http://13.49.64.170/api/maladies/"+a),A.ap(["Content-Type","application/json"],k,k)),$async$XK)
 case 7:n=c
 if(n.b===200||n.b===204){q=!0
 s=1
@@ -24713,7 +24713,7 @@ XH(a){return A.aDN(a)},
 aDN(a){var s=0,r=A.M(t.cC),q,p=2,o,n,m,l,k,j,i,h,g
 var $async$XH=A.N(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:p=4
-j=A.dr("http://13.214.201.93/api/medicaments")
+j=A.dr("http://13.49.64.170/api/medicaments")
 i=t.N
 i=A.ap(["Content-Type","application/json"],i,i)
 s=7
@@ -24750,7 +24750,7 @@ var $async$XL=A.N(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:p=4
 k=t.N
 s=7
-return A.P(A.asQ(A.dr("http://13.214.201.93/api/medicaments/"+a),A.ap(["Content-Type","application/json"],k,k)),$async$XL)
+return A.P(A.asQ(A.dr("http://13.49.64.170/api/medicaments/"+a),A.ap(["Content-Type","application/json"],k,k)),$async$XL)
 case 7:n=c
 if(n.b===200||n.b===204){q=!0
 s=1
@@ -24778,7 +24778,7 @@ var $async$XM=A.N(function(a,b){if(a===1){o=b
 s=p}while(true)switch(s){case 0:p=4
 i=t.N
 s=7
-return A.P(A.apb(A.dr("http://13.214.201.93/api/consultations"),A.ap(["Content-Type","application/json"],i,i)),$async$XM)
+return A.P(A.apb(A.dr("http://13.49.64.170/api/consultations"),A.ap(["Content-Type","application/json"],i,i)),$async$XM)
 case 7:n=b
 if(n.b===200){i=n
 m=B.Z.be(0,A.e5(A.e4(i.e)).be(0,i.w))
@@ -24812,7 +24812,7 @@ aDL(a){var s=0,r=A.M(t.Q3),q,p=2,o,n,m,l,k,j,i,h,g
 var $async$XF=A.N(function(b,c){if(b===1){o=c
 s=p}while(true)switch(s){case 0:p=4
 a.E(0,"notes")
-j=A.dr("http://13.214.201.93/api/consultations")
+j=A.dr("http://13.49.64.170/api/consultations")
 i=t.N
 i=A.ap(["Content-Type","application/json"],i,i)
 s=7
