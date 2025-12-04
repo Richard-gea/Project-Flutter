@@ -1,94 +1,44 @@
 const express = require('express');
-const cors = require('cors');
+const { corsMiddleware, additionalCorsMiddleware } = require('./middleware/corsMiddleware');
+const { errorHandler, notFoundHandler } = require('./middleware/errorMiddleware');
 
-// Optional imports - don't fail if missing
-let patientRoutes, maladyRoutes, medicamentRoutes, consultationRoutes;
-
-try {
-  patientRoutes = require('./routes/patients');
-  maladyRoutes = require('./routes/maladies');
-  medicamentRoutes = require('./routes/medicaments');
-  consultationRoutes = require('./routes/consultations');
-} catch (err) {
-  console.log('⚠️ Some route files not found, using fallback routes');
-}
+// Import routes
+const patientRoutes = require('./routes/patients');
+const maladyRoutes = require('./routes/maladies');
+const medicamentRoutes = require('./routes/medicaments');
+const consultationRoutes = require('./routes/consultations');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(cors({
-  origin: [
-    'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com',
-    'https://richard-frontend-website.s3-website.eu-north-1.amazonaws.com',
-    'http://localhost:3000',
-    'http://localhost:8080'
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
-}));
+// CORS middleware
+app.use(corsMiddleware);
+app.options('*', corsMiddleware);
+app.use(additionalCorsMiddleware);
 
-// Handle preflight requests explicitly
-app.options('*', cors());
-
+// Body parsing middleware
 app.use(express.json());
-
-// Additional CORS middleware as fallback
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint for Elastic Beanstalk
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'PharmaX Server is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Setup routes with fallbacks
-if (patientRoutes) {
-  app.use('/api/patients', patientRoutes);
-} else {
-  app.get('/api/patients', (req, res) => {
-    res.json([{ id: 1, name: 'John Doe', age: 30 }]);
-  });
-}
+// API Routes
+app.use('/api/patients', patientRoutes);
+app.use('/api/maladies', maladyRoutes);
+app.use('/api/medicaments', medicamentRoutes);
+app.use('/api/consultations', consultationRoutes);
 
-if (maladyRoutes) {
-  app.use('/api/maladies', maladyRoutes);
-} else {
-  app.get('/api/maladies', (req, res) => {
-    res.json([{ id: 1, name: 'Common Cold', severity: 'mild' }]);
-  });
-}
-
-if (medicamentRoutes) {
-  app.use('/api/medicaments', medicamentRoutes);
-} else {
-  app.get('/api/medicaments', (req, res) => {
-    res.json([{ id: 1, name: 'Aspirin', dosage: '500mg' }]);
-  });
-}
-
-if (consultationRoutes) {
-  app.use('/api/consultations', consultationRoutes);
-} else {
-  app.get('/api/consultations', (req, res) => {
-    res.json([{ id: 1, date: '2024-12-04', patient: 'John Doe' }]);
-  });
-}
+// Error handling middleware (must be after routes)
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 
 

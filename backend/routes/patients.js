@@ -1,6 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const Patient = require('../models/Patient');
+const PatientController = require('../controllers/patientController');
+
+// GET /api/patients - Get all patients
+router.get('/', PatientController.getAllPatients);
+
+// GET /api/patients/:id - Get patient by ID
+router.get('/:id', PatientController.getPatientById);
+
+// POST /api/patients - Create new patient
+router.post('/', PatientController.createPatient);
+
+// PUT /api/patients/:id - Update patient
+router.put('/:id', PatientController.updatePatient);
+
+// DELETE /api/patients/:id - Delete patient
+router.delete('/:id', PatientController.deletePatient);
+
+module.exports = router;
 
 // Get all patients (not deleted)
 router.get('/', async (req, res) => {
