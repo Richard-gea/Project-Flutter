@@ -21,6 +21,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint for Elastic Beanstalk
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'PharmaX API Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '2.0.0',
+    endpoints: [
+      '/api/patients',
+      '/api/maladies',
+      '/api/medicaments', 
+      '/api/consultations'
+    ]
+  });
+});
+
+// Additional health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 

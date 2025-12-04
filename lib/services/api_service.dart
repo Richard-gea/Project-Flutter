@@ -7,14 +7,14 @@ import '../models/consultation.dart';
 
 class ApiService {
   // AWS Elastic Beanstalk URL
-  static const String baseUrl = 'http://in401-project-env.eba-rmnpt3ed.eu-north-1.elasticbeanstalk.com/api';
+  static const String baseUrl = 'http://in401-project-env.eba-rmnpt3ed.eu-north-1.elasticbeanstalk.com';
   
   // Local development URL
   // static const String baseUrl = 'http://localhost:3000/api';
   static Future<List<Patient>> getPatients() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/patients'),
+        Uri.parse('$baseUrl/api/patients'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -42,11 +42,11 @@ class ApiService {
       // Remove null id and timestamps for creation
       patientData.removeWhere((key, value) => value == null || key == '_id');
       
-      print('🔄 ApiService: Sending POST request to $baseUrl/patients');
+      print('🔄 ApiService: Sending POST request to $baseUrl/api/patients');
       print('🔄 ApiService: Patient data: $patientData');
 
       final response = await http.post(
-        Uri.parse('$baseUrl/patients'),
+        Uri.parse('$baseUrl/api/patients'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(patientData),
       );
@@ -86,7 +86,7 @@ class ApiService {
   static Future<List<Patient>> searchPatients(String query) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/patients/search?q=${Uri.encodeComponent(query)}'),
+        Uri.parse('$baseUrl/api/patients/search?q=${Uri.encodeComponent(query)}'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -125,7 +125,7 @@ class ApiService {
   static Future<List<Malady>> getMaladies() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/maladies'),
+        Uri.parse('$baseUrl/api/maladies'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -148,7 +148,7 @@ class ApiService {
   static Future<List<Medicament>> getMedicaments() async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/medicaments'),
+        Uri.parse('$baseUrl/api/medicaments'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -169,7 +169,7 @@ class ApiService {
   static Future<List<Medicament>> getMedicamentsByMalady(String maladyId) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/medicaments/malady/$maladyId'),
+        Uri.parse('$baseUrl/api/medicaments/malady/$maladyId'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -190,7 +190,7 @@ class ApiService {
   static Future<Malady> createMalady(Map<String, dynamic> maladyData) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/maladies'),
+        Uri.parse('$baseUrl/api/maladies'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(maladyData),
       );
@@ -211,7 +211,7 @@ class ApiService {
   static Future<bool> deleteMalady(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/maladies/$id'),
+        Uri.parse('$baseUrl/api/maladies/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -232,7 +232,7 @@ class ApiService {
   static Future<Medicament> createMedicament(Map<String, dynamic> medicamentData) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/medicaments'),
+        Uri.parse('$baseUrl/api/medicaments'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(medicamentData),
       );
@@ -253,7 +253,7 @@ class ApiService {
   static Future<bool> deleteMedicament(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/medicaments/$id'),
+        Uri.parse('$baseUrl/api/medicaments/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -272,7 +272,7 @@ class ApiService {
     try {
       // 1. Send HTTP GET request to the backend endpoint
       final response = await http.get(
-        Uri.parse('$baseUrl/consultations'),
+        Uri.parse('$baseUrl/api/consultations'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -301,7 +301,7 @@ class ApiService {
   static Future<Consultation> getConsultation(String id) async {
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/consultations/$id'),
+        Uri.parse('$baseUrl/api/consultations/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
@@ -324,7 +324,7 @@ class ApiService {
       // Always remove notes field
       consultationData.remove('notes');
       final response = await http.post(
-        Uri.parse('$baseUrl/consultations'),
+        Uri.parse('$baseUrl/api/consultations'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(consultationData),
       );
@@ -345,7 +345,7 @@ class ApiService {
   static Future<bool> deleteConsultation(String id) async {
     try {
       final response = await http.delete(
-        Uri.parse('$baseUrl/consultations/$id'),
+        Uri.parse('$baseUrl/api/consultations/$id'),
         headers: {'Content-Type': 'application/json'},
       );
 
