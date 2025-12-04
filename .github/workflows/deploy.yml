@@ -18,6 +18,26 @@ jobs:
         cd backend
         zip -r ../pharmax-backend.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
 
+    - name: Clean up old deployment versions
+      run: |
+        aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws configure set default.region eu-north-1
+        
+        # List and delete old versions (keep only latest 5)
+        aws elasticbeanstalk describe-application-versions \
+          --application-name in401-Project \
+          --query 'ApplicationVersions[5:].VersionLabel' \
+          --output text | tr '\t' '\n' | while read version; do
+            if [ ! -z "$version" ]; then
+              echo "Deleting old version: $version"
+              aws elasticbeanstalk delete-application-version \
+                --application-name in401-Project \
+                --version-label "$version" \
+                --delete-source-bundle || true
+            fi
+          done
+
     - name: Deploy Backend to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v22
       with:
@@ -28,8 +48,9 @@ jobs:
         version_label: backend-v${{ github.run_number }}-${{ github.sha }}
         region: eu-north-1
         deployment_package: pharmax-backend.zip
-        use_existing_version_if_available: true
+        use_existing_version_if_available: false
         wait_for_deployment: true
+        replace_existing: true
 
   deploy-frontend:
     runs-on: ubuntu-latest
