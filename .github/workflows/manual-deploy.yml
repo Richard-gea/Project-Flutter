@@ -1,0 +1,61 @@
+name: Manual Backend Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      version:
+        description: 'Version label (optional)'
+        required: false
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Create deployment package
+      run: |
+        cd backend
+        # Create a clean deployment package
+        zip -r ../pharmax-manual-deploy.zip . \
+          -x "node_modules/*" \
+          -x "*.zip" \
+          -x "*.log" \
+          -x ".git/*" \
+          -x "test/*" \
+          -x "*.test.js"
+
+    - name: Upload deployment package
+      uses: actions/upload-artifact@v4
+      with:
+        name: pharmax-deployment-${{ github.sha }}
+        path: pharmax-manual-deploy.zip
+
+    - name: Deploy to Elastic Beanstalk
+      if: ${{ github.event.inputs.environment == 'production' }}
+      uses: einaregilsson/beanstalk-deploy@v22
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: pharmax-app
+        environment_name: In401-env
+        version_label: ${{ github.event.inputs.version || github.sha }}
+        region: eu-north-1
+        deployment_package: pharmax-manual-deploy.zip
+        wait_for_deployment: true

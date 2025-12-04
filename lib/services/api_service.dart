@@ -6,8 +6,8 @@ import '../models/medicament.dart';
 import '../models/consultation.dart';
 
 class ApiService {
-  // Dynamic URL - easy to change
-  static const String baseUrl = 'http://13.49.64.170/api';
+  // AWS Elastic Beanstalk URL
+  static const String baseUrl = 'http://In401-env.eba-hiwputu3.eu-north-1.elasticbeanstalk.com/api';
   
   // Local development URL
   // static const String baseUrl = 'http://localhost:3000/api';

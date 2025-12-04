@@ -1,0 +1,31 @@
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches: [Project]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create deployment package
+      run: |
+        cd backend
+        zip -r ../pharmax-deploy.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
+
+    - name: Deploy to Elastic Beanstalk
+      uses: einaregilsson/beanstalk-deploy@v22
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: pharmax-app
+        environment_name: In401-env
+        version_label: v${{ github.run_number }}
+        region: eu-north-1
+        deployment_package: pharmax-deploy.zip
+        wait_for_deployment: true
