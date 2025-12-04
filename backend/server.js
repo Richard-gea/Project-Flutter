@@ -10,7 +10,7 @@ const medicamentRoutes = require('./routes/medicaments');
 const consultationRoutes = require('./routes/consultations');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors({
   origin: [
@@ -32,7 +32,6 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
-app.use(express.json());
 
 app.use('/api/patients', patientRoutes);
 app.use('/api/maladies', maladyRoutes);
