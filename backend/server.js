@@ -41,10 +41,15 @@ app.use('/api/consultations', consultationRoutes);
 
 
 
-connectToMongoDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-  });
+// Start server regardless of database connection
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 PharmaX Server running on port ${PORT}`);
+  console.log(`📍 Health check: http://localhost:${PORT}/health`);
+});
+
+// Try to connect to MongoDB (optional)
+connectToMongoDB().catch(err => {
+  console.log('⚠️ MongoDB not available, using mock data');
 });
 
 process.on('SIGINT', async () => {
