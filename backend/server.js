@@ -20,9 +20,29 @@ app.use(cors({
     'http://localhost:8080'
   ],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 app.use(express.json());
+
+// Additional CORS middleware as fallback
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Health check endpoint for Elastic Beanstalk
 app.get('/health', (req, res) => {
