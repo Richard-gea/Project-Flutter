@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/patient_provider.dart';
 import 'doctor_screen.dart';
 import 'admin_screen.dart';
 
