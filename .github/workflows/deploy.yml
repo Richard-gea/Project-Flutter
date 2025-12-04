@@ -1,4 +1,4 @@
-name: Deploy to AWS Elastic Beanstalk
+name: Deploy PharmaX Full-Stack App
 
 on:
   push:
@@ -6,26 +6,60 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-backend:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Create deployment package
+    - name: Create backend deployment package
       run: |
         cd backend
-        zip -r ../pharmax-deploy.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
+        zip -r ../pharmax-backend.zip . -x "node_modules/*" "*.zip" "*.log" ".git/*"
 
-    - name: Deploy to Elastic Beanstalk
+    - name: Deploy Backend to Elastic Beanstalk
       uses: einaregilsson/beanstalk-deploy@v22
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: in401-Project
         environment_name: In401-Project-env
-        version_label: v${{ github.run_number }}
+        version_label: backend-v${{ github.run_number }}
         region: eu-north-1
-        deployment_package: pharmax-deploy.zip
+        deployment_package: pharmax-backend.zip
         wait_for_deployment: true
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+
+    - name: Install Flutter dependencies
+      run: flutter pub get
+
+    - name: Build Flutter web
+      run: flutter build web --release
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-north-1
+
+    - name: Deploy Frontend to S3
+      run: |
+        aws s3 sync build/web/ s3://richard-frontend-website --delete
+        
+    - name: Output Frontend URL
+      run: |
+        echo "🚀 Frontend deployed to: http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com"
