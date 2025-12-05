@@ -38,19 +38,18 @@ jobs:
             fi
           done
 
-    - name: Deploy Backend to Elastic Beanstalk
-      uses: einaregilsson/beanstalk-deploy@v22
-      with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: in401-Project
-        environment_name: In401-Project-env
-        version_label: backend-v${{ github.run_number }}-${{ github.sha }}
-        region: eu-north-1
-        deployment_package: pharmax-backend.zip
-        use_existing_version_if_available: false
-        wait_for_deployment: true
-        replace_existing: true
+    - - name: Deploy to Elastic Beanstalk
+  uses: einaregilsson/beanstalk-deploy@v22
+  with:
+    aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    region: eu-north-1
+    application_name: in401-Project
+    environment_name: In401-Project-env
+    version_label: backend-${{ github.run_number }}-${{ github.sha }}
+    deployment_package: pharmax-backend.zip
+    wait_for_deployment: true
+
 
   deploy-frontend:
     runs-on: ubuntu-latest
