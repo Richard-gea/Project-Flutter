@@ -7,8 +7,8 @@ const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
   origin: [
-    'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com',
-    'https://richard-frontend-website.s3-website.eu-north-1.amazonaws.com',
+    'http://richard-frontend-website.s3-website-ap-southeast-1.amazonaws.com',
+    'http://richard-frontend-website.s3-website-ap-southeast-1.amazonaws.com',
     'http://localhost:3000',
     'http://localhost:8080'
   ],
@@ -24,7 +24,7 @@ app.options('*', cors(corsOptions));
 
 // Additional fallback CORS
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com');
+  res.header('Access-Control-Allow-Origin', 'http://richard-frontend-website.s3-website-ap-southeast-1.amazonaws.com');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
