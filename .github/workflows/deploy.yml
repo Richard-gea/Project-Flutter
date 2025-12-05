@@ -83,4 +83,4 @@ jobs:
         
     - name: Output Frontend URL
       run: |
-        echo "🚀 Frontend deployed to:http://richard-frontend-website.s3-website-ap-southeast-1.amazonaws.com
+        echo "🚀 Frontend deployed to:  http://richard-frontend-website.s3-website-ap-southeast-1.amazonaws.com"
