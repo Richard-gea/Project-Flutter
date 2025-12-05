@@ -26,13 +26,13 @@ jobs:
         
         # List and delete old versions (keep only latest 5)
         aws elasticbeanstalk describe-application-versions \
-          --application-name in401-Project \
+          --application-name testing \
           --query 'ApplicationVersions[5:].VersionLabel' \
           --output text | tr '\t' '\n' | while read version; do
             if [ ! -z "$version" ]; then
               echo "Deleting old version: $version"
               aws elasticbeanstalk delete-application-version \
-                --application-name in401-Project \
+                --application-name testing \
                 --version-label "$version" \
                 --delete-source-bundle || true
             fi
@@ -43,9 +43,9 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        region: ap-southeast-1
-        application_name: in401-Project
-        environment_name: In401-Project-env
+        region: eu-north-1
+        application_name: testing
+        environment_name: Testing-env
         version_label: backend-${{ github.run_number }}-${{ github.sha }}
         deployment_package: pharmax-backend.zip
         wait_for_deployment: true
