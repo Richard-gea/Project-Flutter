@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Simple CORS configuration
+
 const corsOptions = {
   origin: [
     'http://richard-frontend-website.s3-website.eu-north-1.amazonaws.com',
